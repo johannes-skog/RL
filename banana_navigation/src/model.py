@@ -17,7 +17,7 @@ from buffer import (
 
 class Qnet(torch.nn.Module):
 
-    def __init__(self, in_dim: int, out_dim: int):
+    def __init__(self, in_dim: int, out_dim: int, lr: float):
 
         super(Qnet, self).__init__()
 
@@ -45,9 +45,7 @@ class Qnet(torch.nn.Module):
             torch.nn.Linear(32, out_dim),
         )
 
-        self._softmax = torch.nn.Softmax(dim=0)
-
-        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=0.001)
+        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=lr)
 
     def forward(self, s: torch.Tensor):
         """Forward the state through the network, return the qvalues and the greedy action"""
