@@ -17,12 +17,13 @@ from buffer import (
 
 class Qnet(torch.nn.Module):
 
-    def __init__(self, in_dim: int, out_dim: int, lr: float):
+    def __init__(self, in_dim: int, out_dim: int, lr: float = None):
 
         super(Qnet, self).__init__()
 
         self._n_actions = out_dim
 
+        # Setting  up the network
         self._model = torch.nn.Sequential(
             torch.nn.Linear(in_dim, 256),
             torch.nn.LayerNorm(256),
@@ -45,7 +46,8 @@ class Qnet(torch.nn.Module):
             torch.nn.Linear(32, out_dim),
         )
 
-        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=lr)
+        # Setting  up the optimizer
+        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=lr) if lr is not None else None
 
     def forward(self, s: torch.Tensor):
         """Forward the state through the network, return the qvalues and the greedy action"""
@@ -104,6 +106,8 @@ class Qnet(torch.nn.Module):
 
     def update(self, loss: torch.Tensor):
         """Update the network"""
+
+        assert self._optimizer is not None, "The optimizer has not been initialized"
 
         self.zero_grad()
 
@@ -278,30 +282,3 @@ def train_episode(meta: Dict[str, Any], qnet_target: Qnet, qnet: Qnet, replaybuf
         qnet.update(loss)
 
     return qvalues_target, batch.action
-
-
-if __name__ == "__main__":
-
-    qnet = Qnet(100, 4)
-
-    batch_size = 10
-
-    s = torch.from_numpy(np.random.uniform(size=[batch_size, 100])).float()
-
-    actions = qnet.forward_epsilon(s)
-
-    actions_greedy = qnet.greedy(actions)
-
-    qnet_copy = Qnet(100, 4)
-
-    for name_from, W_from in qnet_copy.named_parameters():
-        for name_to, W_to in qnet.named_parameters():
-            if name_from == name_to:
-                print(name_from, (W_to.data == W_from.data).float().mean())
-
-    qnet.steal_weights(qnet_copy)
-
-    for name_from, W_from in qnet_copy.named_parameters():
-        for name_to, W_to in qnet.named_parameters():
-            if name_from == name_to:
-                print(name_from, (W_to.data == W_from.data).float().mean())

@@ -10,6 +10,9 @@ For setting up the conda environment and download the unity environment run
 
     bash setup.bash
 
+Make sure to activate the conda environment
+
+    conda activate banana_navigation
 
 #### Environment to solve
 
@@ -35,6 +38,8 @@ state
 In order to analyze/visualize how different choices of hyperparameters effecs the network's (agent's) ability to solve the enviroment, launch the notebook and tensorboard service by running
 
     bash launch.bash
+
+![Environment](img/tensorboard.png)
 
 
 #### Train the network
