@@ -3,18 +3,14 @@ import logging
 import numpy as np
 
 
-EPSILON = 10**-5
-
-
 class ReplayBuffer(object):
-    """Replaybuffer for holding"""
+    """Replaybuffer for holding experience tuples"""
 
     def __init__(self, size: int, state_size: int, action_size: int):
 
         self._state = np.zeros(shape=(size, state_size), dtype=np.float)
         self._state_prime = np.zeros(shape=(size, state_size), dtype=np.float)
         self._action = np.zeros(shape=(size, action_size), dtype=np.float)
-
         self._reward = np.zeros(shape=size, dtype=np.float)
         self._weight = np.zeros(shape=size, dtype=np.float)
         self._done = np.zeros(shape=size, dtype=np.float)
@@ -42,15 +38,11 @@ class ReplayBuffer(object):
 
             weights = np.abs(weights - weights.max()*0.999)
 
-            #sample_prob = weights[np.array(self._index)]
-
             sample_prob = (weights * (self._seen**beta))[np.array(self._index)]
 
         else:
 
             sample_prob = (weights / (self._seen**beta))[np.array(self._index)]
-
-            #sample_prob = weights[np.array(self._index)]
 
         sample_prob = sample_prob / sample_prob.sum()
 
@@ -66,6 +58,7 @@ class ReplayBuffer(object):
         weight: np.array = None,
         beta: float = 1,
     ):
+        """Add experience tuples to the buffer"""
 
         assert state.shape[0] == state_prime.shape[0] == action.shape[0] == reward.shape[0] == done.shape[0]
 
@@ -97,16 +90,15 @@ class ReplayBuffer(object):
         self._weight[mask] = weight if weight is not None else 1
 
     def update_weight(self, indices: List[int], weight: np.array, alpha: float = 0.5):
+        """Update the experience tuple weights"""
 
         mask = np.zeros(self._size, dtype=bool)
         mask[indices] = True
 
-        #self._seen[mask] = 1
-
         self._weight[mask] = self._weight[mask] * alpha + weight * (1 - alpha)
 
     def draw(self, size: int, replace: bool = False,  beta: float = 1, beta_2: float = 1):
-        """Sample Qentries from the buffer"""
+        """Sample experience tuples from the buffer"""
 
         if len(self) < size:
             return [None] * 7
@@ -162,7 +154,6 @@ if __name__ == '__main__':
             action=action,
             weight=weight,
             done=done
-
         )
 
         print(len(replaybuffer))
