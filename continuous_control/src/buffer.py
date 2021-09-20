@@ -112,7 +112,6 @@ class ReplayBuffer(object):
         indices = np.random.choice(len(self), size, p=sampling_prob, replace=replace)
 
         self._seen[indices] += 1
-        # self._seen += 1
 
         return (
             self._state[indices, :],

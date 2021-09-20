@@ -17,7 +17,7 @@ The enviroment can be regarded as solved if the arms get an average total reward
 
 #### Dependencies
 
-Linux x86-64 system
+Linux x86-64 system with CUDA Version: 11.2
 
 Install Anaconda python 3, [download](https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh)
 
