@@ -21,7 +21,7 @@ def train(
     sigma_init: float,
     sigma_end: float,
     sigma_decay: float,
-    scale_reward: float = 1,
+    scale_reward: float = 10,
     evaluation_rounds: int = 100,
     train_mode: bool = True,
     inference_steps: int = 20,
@@ -83,8 +83,8 @@ def train(
 
             scores += np.sum(rewards)
 
-            # Convert the rewards to the correct one. All rewards > 0 should be 0.1
-            rewards_scaled = rewards * 10  # (rewards > 0) * 0.1
+            # Scale the rewards, speeds up the training
+            rewards_scaled = rewards * scale_reward
 
             # print(rewards_scaled)
 
