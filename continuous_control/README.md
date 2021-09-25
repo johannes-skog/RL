@@ -39,7 +39,7 @@ In order to analyze/visualize how different choices of hyperparameters effecs th
 
 #### Train the agent
 
-Make sure that all dependencies have been installed and that the notebook and tensorboard service have been started. Go into the Continuous_Control notebook and follow the instructions there.
+Make sure that all dependencies have been installed and that the notebook and tensorboard service have been started. Go into the analyze notebook and follow the instructions there.
 
 #### Agent description and conclusions
 
