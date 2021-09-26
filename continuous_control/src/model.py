@@ -58,7 +58,6 @@ class GenericModel(torch.nn.Module):
         """Do a deepcopy of the network"""
         return copy.deepcopy(self)
 
-    # qnet is another instance of Qnet
     def steal_weights(self, model: Any, tau: float = 0):
         """Steal the weights of qnet and use in this instance of Qnet, tau specifies how big part of qnet's we
         want to use in this instance"""

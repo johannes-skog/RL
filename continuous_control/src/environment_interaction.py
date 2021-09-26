@@ -37,6 +37,9 @@ def train(
     env_info = env.reset(train_mode=train_mode)[brain_name]
     num_agents = len(env_info.agents)
 
+    scores_val_list = []
+    scores_train_list = []
+
     for episode in range(episodes):
 
         env_info = env.reset(train_mode=train_mode)[brain_name]
@@ -85,8 +88,6 @@ def train(
 
             # Scale the rewards, speeds up the training
             rewards_scaled = rewards * scale_reward
-
-            # print(rewards_scaled)
 
             if np.any(dones):
                 break
@@ -165,6 +166,9 @@ def train(
             train_mode=train_mode,
         )
 
+        scores_val_list.append(eval_score)
+        scores_train_list.append(scores)
+
         print("*" * 20 + f"  {episode}  " + "*" * 20)
         print(f"Critic Loss: {np.mean(losses_critic)}")
         print(f"Actor Loss: {np.mean(losses_actor)}")
@@ -172,7 +176,14 @@ def train(
         print(f"Validation Score: {eval_score}")
         print(f"Reward in batch: {np.mean(rewards_in_batch)/0.1}")
 
+        s = 0 if episode < 100 else len(scores_train_list) - 100
+        e = len(scores_train_list)
+
+        writer.add_scalar("validation/last_avg_score", np.mean([scores_val_list[i] for i in range(s, e)]), episode)
+        writer.add_scalar("training/last_avg_score", np.mean([scores_train_list[i] for i in range(s, e)]), episode)
+
         writer.add_histogram("training/hist/actions", action.flatten(), episode)
+
         writer.add_scalar("training/sigma", sigma, episode)
         writer.add_scalar("training/kpi/score", scores, episode)
         writer.add_scalar("training/kpi/loss_actor", np.mean(losses_actor), episode)
@@ -183,8 +194,8 @@ def train(
         if eval_score > best_val_score:
 
             best_val_score = eval_score
-            torch.save(ddpg._actor.state_dict(), "continuous_control/models/actor.ckp")
-            torch.save(ddpg._critic.state_dict(), "continuous_control/models/critic.ckp")
+            torch.save(ddpg._actor.state_dict(), "models/actor.ckp")
+            torch.save(ddpg._critic.state_dict(), "models/critic.ckp")
 
 
 def evaluation(
